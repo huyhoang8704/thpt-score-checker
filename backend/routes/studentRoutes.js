@@ -8,4 +8,7 @@ router.get('/:sbd', studentController.getStudentBySBD);
 // [GET] /students - Lấy tất cả học sinh (test)
 router.get('/', studentController.getAllStudents);
 
+// [GET] /students/top/:group - Top 10 theo khối
+router.get('/top/:group', studentController.getTopStudentsByGroup);
+
 module.exports = router;

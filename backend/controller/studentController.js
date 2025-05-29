@@ -1,4 +1,6 @@
 const Student = require('../models/studentSchema');
+const groupSubjects = require('../config/groupSubjects');
+
 
 
 const getStudentBySBD = async (req, res) => {
@@ -23,8 +25,38 @@ const getAllStudents = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server' });
   }
 }
+const getTopStudentsByGroup = async (req, res) => {
+  const groupKey = req.params.group;
+  const subjects = groupSubjects[groupKey];
+
+  if (!subjects) {
+    return res.status(400).json({ message: `Khối '${groupKey}' không được hỗ trợ` });
+  }
+
+  try {
+    const students = await Student.aggregate([
+      {
+        $addFields: {
+          totalScore: {
+            $sum: subjects.map(subject => ({
+              $ifNull: [`$${subject}`, 0]
+            }))
+          }
+        }
+      },
+      { $sort: { totalScore: -1 } },
+      { $limit: 10 }
+    ]);
+
+    res.json({ group: groupKey, subjects, top10: students });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server khi thống kê top 10' });
+  }
+}
 
 module.exports = {
   getStudentBySBD,
-  getAllStudents
+  getAllStudents,
+  getTopStudentsByGroup
 };
