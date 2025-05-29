@@ -3,6 +3,8 @@ const Student = require('../models/studentSchema');
 
 const getStudentBySBD = async (req, res) => {
   try {
+    if (!/^\d{8}$/.test(req.params.sbd)) return res.status(400).json({ message: 'Số báo danh không hợp lệ' });
+
     const student = await Student.findOne({ sbd: req.params.sbd });
     if (!student) {
       return res.status(404).json({ message: 'Không tìm thấy thí sinh' });
