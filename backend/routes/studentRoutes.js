@@ -11,4 +11,7 @@ router.get('/', studentController.getAllStudents);
 // [GET] /students/top/:group - Top 10 theo khối
 router.get('/top/:group', studentController.getTopStudentsByGroup);
 
+
+router.get('/report/score-levels', studentController.getScoreLevelReport);
+
 module.exports = router;
